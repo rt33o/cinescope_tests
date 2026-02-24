@@ -43,7 +43,8 @@ class AuthAPI(CustomRequester):
         response =  self.send_request(
             method="POST",
             endpoint=LOGIN_ENDPOINT,
-            data=user_creds
+            data=user_creds,
+            need_logging=False
         )
 
 

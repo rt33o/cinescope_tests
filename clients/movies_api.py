@@ -1,7 +1,6 @@
 
-from constants import REGISTER_ENDPOINT, LOGIN_ENDPOINT, BASE_URL, MOVIES, MOVIES_BASE_URL
+from constants import MOVIES, MOVIES_BASE_URL
 from custom_requester.custom_requester import CustomRequester
-from clients.auth_api import AuthAPI
 
 class MoviesAPI(CustomRequester):
     """
@@ -14,11 +13,10 @@ class MoviesAPI(CustomRequester):
 
     def get_movies(self, expected_status=200, **kwargs, ):
         """
-        Регистрация нового пользователя.
-        :param user_data: Данные пользователя.
+        Получить список фильмов (GET /movies) с query-параметрами.
         :param expected_status: Ожидаемый статус-код.
+        :param kwargs: Query-параметры запроса.
         """
-        print(self.headers)
         return self.send_request(
             method="GET",
             endpoint=MOVIES,
@@ -29,12 +27,10 @@ class MoviesAPI(CustomRequester):
 
     def get_movies_by_id(self, expected_status=200, identification=1):
         """
-        Регистрация нового пользователя.
-        :param identification:
-        :param user_data: Данные пользователя.
+        Получить фильм по id (GET /movies/{id}).
+        :param identification: ID фильма.
         :param expected_status: Ожидаемый статус-код.
         """
-        print(self.headers)
         return self.send_request(
             method="GET",
             endpoint=f'{MOVIES}/{identification}',
@@ -42,34 +38,31 @@ class MoviesAPI(CustomRequester):
             need_logging=True
         )
 
-    def create_movie(self, test_movie=None, expected_status=201):
+    def create_movie(self, test_movie=None, expected_status=201, need_logging=True):
         """
-        Создание нового фильма
+        Создать новый фильм (POST /movies).
+        :param test_movie: Тело запроса (данные фильма).
+        :param expected_status: Ожидаемый статус-код.
+        :param need_logging: Включить логирование запроса/ответа.
         """
 
         return self.send_request(
             method="POST",
             endpoint=MOVIES,
             expected_status=expected_status,
-            need_logging=True,
+            need_logging=need_logging,
             data=test_movie
         )
 
-    def delete_movie(self, test_movie, expected_status=200):
-        #Создаем новый фильм
-        create_movie = self.send_request(
-            method="POST",
-            endpoint=MOVIES,
-            expected_status=201,
-            need_logging=True,
-            data=test_movie
-        )
+    def delete_movie(self, movie_id=None, expected_status=200):
+        """
+        Удалить фильм по id (DELETE /movies/{id}).
+        :param movie_id: ID фильма для удаления.
+        :param expected_status: Ожидаемый статус-код.
+        """
 
-        #Получаем айди созданного фильма
-        create_movie_response = create_movie.json()
-        movie_id = create_movie_response["id"]
 
-        #Удаляем созданный фильм nahooi
+        #Удаляем созданный фильм
         return self.send_request(
         method = "DELETE",
         endpoint = f'{MOVIES}/{movie_id}',
@@ -77,25 +70,19 @@ class MoviesAPI(CustomRequester):
         need_logging = True
         )
 
-    def patch_movie(self, test_movie, updated_test_movie, expected_status):
-        # Создаем новый фильм
-        create_movie = self.send_request(
-            method="POST",
-            endpoint=MOVIES,
-            expected_status=201,
-            need_logging=True,
-            data=test_movie
-        )
-
-        # Получаем айди созданного фильма
-        create_movie_response = create_movie.json()
-        movie_id = create_movie_response["id"]
+    def patch_movie(self, movie_id, updated_test_movie_data, expected_status):
+        """
+        Частично обновить фильм по id (PATCH /movies/{id}).
+        :param movie_id: ID фильма.
+        :param updated_test_movie_data: Данные для обновления (тело запроса).
+        :param expected_status: Ожидаемый статус-код.
+        """
 
         # Обновляем созданный фильм
         return self.send_request(
             method="PATCH",
             endpoint=f'{MOVIES}/{movie_id}',
             expected_status=expected_status,
-            need_logging=True,
-            data=updated_test_movie
+            need_logging=False,
+            data=updated_test_movie_data
         )

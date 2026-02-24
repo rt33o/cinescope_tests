@@ -33,9 +33,6 @@ class TestAuthAPI:
 
         token = response_data["accessToken"]
 
-        # print(api_manager.session)
-
-
         # Проверки
         assert "accessToken" in response_data, "Токен доступа отсутствует в ответе"
         assert response_data["user"]["email"] == user_creds["email"], "Email не совпадает"

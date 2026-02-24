@@ -10,3 +10,5 @@ REGISTER_ENDPOINT = "/register"
 MOVIES = "/movies"
 
 
+user_creds = {"email": "api1@gmail.com",
+        "password": "asdqwe123Q"}
