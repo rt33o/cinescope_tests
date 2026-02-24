@@ -24,6 +24,21 @@ class MoviesAPI(CustomRequester):
             endpoint=MOVIES,
             expected_status=expected_status,
             query=kwargs,
+            need_logging=False
+        )
+
+    def get_movies_by_id(self, expected_status=200, identification=1):
+        """
+        Регистрация нового пользователя.
+        :param identification:
+        :param user_data: Данные пользователя.
+        :param expected_status: Ожидаемый статус-код.
+        """
+        print(self.headers)
+        return self.send_request(
+            method="GET",
+            endpoint=f'{MOVIES}/{identification}',
+            expected_status=expected_status,
             need_logging=True
         )
 

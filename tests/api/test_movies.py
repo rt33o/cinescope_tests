@@ -9,6 +9,7 @@ from custom_requester.custom_requester import CustomRequester
 from tests.api.api_manager import ApiManager
 
 
+
 class TestMovies:
     # ==============================Получение афиш фильмов==============================
     def test_get_movies(self, api_manager: ApiManager):
@@ -17,8 +18,8 @@ class TestMovies:
         response_data = response.json()
 
     def test_negative_get_movies(self, api_manager: ApiManager):
-        pageSize = 21
-        response = api_manager.movies_api.get_movies(exppected_status=400, pageSize=pageSize)
+        page_size = 21
+        response = api_manager.movies_api.get_movies(exppected_status=400, pageSize=page_size)
         response_data = response.json()
 
 
@@ -33,6 +34,21 @@ class TestMovies:
         response = api_manager.movies_api.create_movie(expected_status=401, test_movie=test_movie)
         response_data = response.json()
 
+    # ==============================Получение афиш фильмов по идентификатору==============================
+    def test_get_movies_by_id(self, authorized_api_manager: ApiManager):
+        identification = 899
+        response = authorized_api_manager.movies_api.get_movies_by_id(id=identification)
+        response_data = response.json()
+        assert response_data['id'] == id, 'Пришел неверный id'
+
+    def test_negative_get_movies_by_non_exist_id(self, authorized_api_manager: ApiManager):
+        identification = 0
+        response = authorized_api_manager.movies_api.get_movies_by_id(expected_status=404, identification=identification)
+        response_data = response.json()
+        assert response_data['message'] == "Фильм не найден", 'Найден фильм по несуществующему ID'
+    #
+    #
+    #
     # ==============================Удаление фильмов==============================
     def test_delete_movie(self, authorized_api_manager: ApiManager, test_movie):
         response = authorized_api_manager.movies_api.delete_movie(test_movie=test_movie)
