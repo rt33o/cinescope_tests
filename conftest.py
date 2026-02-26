@@ -42,7 +42,7 @@ def test_movie():
 @pytest.fixture(scope="function")
 def updated_test_movie_data():
     """
-    Генерация случайного фильма для тестов.
+    Генерация частичного обновления фильма для тестов.
     """
     random_movie = DataGenerator.patch_random_movie()
 
@@ -73,7 +73,7 @@ def requester():
     session = requests.Session()
     return CustomRequester(session=session, base_url=BASE_URL)
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def session():
     """
     Фикстура для создания HTTP-сессии.
@@ -82,15 +82,18 @@ def session():
     yield http_session
     http_session.close()
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def api_manager(session):
     """
     Фикстура для создания экземпляра ApiManager.
     """
     return ApiManager(session)
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def authorized_api_manager(api_manager):
+    """
+    Фикстура для создания экземпляра ApiManager с правами админа.
+    """
     user_creds = constants.user_creds
     api_manager.auth_api.authenticate(user_creds)
     return api_manager
@@ -101,7 +104,6 @@ def authorized_api_manager(api_manager):
 def movie_factory(authorized_api_manager):
     """
     Фабрика: создаёт фильм и отдаёт его наружу.
-    После теста удаляет все созданные фильмы.
     """
     created_movie_ids = []
 

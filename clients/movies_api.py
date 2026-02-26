@@ -67,7 +67,7 @@ class MoviesAPI(CustomRequester):
         method = "DELETE",
         endpoint = f'{MOVIES}/{movie_id}',
         expected_status = expected_status,
-        need_logging = True
+        need_logging = False
         )
 
     def patch_movie(self, movie_id, updated_test_movie_data, expected_status):
@@ -83,6 +83,6 @@ class MoviesAPI(CustomRequester):
             method="PATCH",
             endpoint=f'{MOVIES}/{movie_id}',
             expected_status=expected_status,
-            need_logging=True,
+            need_logging=False,
             data=updated_test_movie_data
         )
