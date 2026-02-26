@@ -24,7 +24,7 @@ class AuthAPI(CustomRequester):
             expected_status=expected_status
         )
 
-    def login_user(self, login_data, expected_status=200):
+    def login_user(self, login_data, expected_status=201):
         """
         Авторизация пользователя.
         :param login_data: Данные для логина.
@@ -44,7 +44,8 @@ class AuthAPI(CustomRequester):
             method="POST",
             endpoint=LOGIN_ENDPOINT,
             data=user_creds,
-            need_logging=False
+            need_logging=False,
+            expected_status=201
         )
 
 

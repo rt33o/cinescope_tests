@@ -35,10 +35,10 @@ class MoviesAPI(CustomRequester):
             method="GET",
             endpoint=f'{MOVIES}/{identification}',
             expected_status=expected_status,
-            need_logging=True
+            need_logging=False
         )
 
-    def create_movie(self, test_movie=None, expected_status=201, need_logging=True):
+    def create_movie(self, test_movie=None, expected_status=201, need_logging=False):
         """
         Создать новый фильм (POST /movies).
         :param test_movie: Тело запроса (данные фильма).
@@ -83,6 +83,6 @@ class MoviesAPI(CustomRequester):
             method="PATCH",
             endpoint=f'{MOVIES}/{movie_id}',
             expected_status=expected_status,
-            need_logging=False,
+            need_logging=True,
             data=updated_test_movie_data
         )

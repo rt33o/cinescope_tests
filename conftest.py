@@ -97,7 +97,7 @@ def authorized_api_manager(api_manager):
 
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def movie_factory(authorized_api_manager):
     """
     Фабрика: создаёт фильм и отдаёт его наружу.
