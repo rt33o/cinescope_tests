@@ -2,8 +2,6 @@ import pytest
 import requests
 
 from conftest import session
-from constants import BASE_URL, HEADERS, REGISTER_ENDPOINT,  LOGIN_ENDPOINT
-from custom_requester.custom_requester import CustomRequester
 from tests.api.api_manager import ApiManager
 
 class TestAuthAPI:

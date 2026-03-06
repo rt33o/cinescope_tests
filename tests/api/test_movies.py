@@ -1,9 +1,5 @@
 from http.client import responses
 
-import pytest
-import requests
-
-
 from tests.api.api_manager import ApiManager
 
 

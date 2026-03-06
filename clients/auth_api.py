@@ -1,5 +1,3 @@
-from http.client import responses
-
 from constants import REGISTER_ENDPOINT, LOGIN_ENDPOINT, BASE_URL
 from custom_requester.custom_requester import CustomRequester
 
