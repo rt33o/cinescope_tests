@@ -118,3 +118,17 @@ def movie_factory(authorized_api_manager):
         return data
 
     return _create
+
+@pytest.fixture
+def user_session():
+    user_pool = []
+
+    def _create_user_session():
+        session = requests.Session()
+        user_session = ApiManager(session)
+        user_pool.append(user_session)
+        return user_session
+    yield _create_user_session
+
+    for user in user_pool:
+        user.close_session()
