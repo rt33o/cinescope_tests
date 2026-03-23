@@ -1,18 +1,17 @@
-from http.client import responses
-
 from tests.api.api_manager import ApiManager
-
-
+import pytest
+from resources.test_data import MOVIES_FILTER_DATA
 
 class TestMovies:
     # ==============================Получение афиш фильмов==============================
-    def test_get_movies(self, api_manager: ApiManager):
-        max_price, min_price = 3000, 1000
-        response = api_manager.movies_api.get_movies(maxPrice=max_price, minPrice=min_price, pageSize=1)
+    @pytest.mark.parametrize("min_p, max_p, location, genre_id", MOVIES_FILTER_DATA)
+    def test_get_movies(self, api_manager: ApiManager, min_p, max_p, location, genre_id):
+        response = api_manager.movies_api.get_movies(maxPrice=max_p, minPrice=min_p, locations=location,
+                                                     genreId=genre_id, pageSize=1)
         response_data = response.json()
         movies = response_data['movies']
         price = movies[0]["price"]
-        assert min_price < price < max_price, "Неверно приходят цены"
+        assert min_p < price < max_p, "Неверно приходят цены"
 
     def test_negative_invalid_page_size_get_movies(self, api_manager: ApiManager):
         page_size = 21
