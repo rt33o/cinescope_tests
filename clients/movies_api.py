@@ -1,5 +1,5 @@
 
-from constants import MOVIES, MOVIES_BASE_URL
+from constants.constants import MOVIES, MOVIES_BASE_URL
 from custom_requester.custom_requester import CustomRequester
 
 class MoviesAPI(CustomRequester):

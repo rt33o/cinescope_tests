@@ -1,4 +1,4 @@
-from constants import REGISTER_ENDPOINT, LOGIN_ENDPOINT, BASE_URL
+from constants.constants import REGISTER_ENDPOINT, LOGIN_ENDPOINT, BASE_URL
 from custom_requester.custom_requester import CustomRequester
 
 class AuthAPI(CustomRequester):
@@ -38,12 +38,21 @@ class AuthAPI(CustomRequester):
 
     def authenticate(self, user_creds: dict):
 
+        if isinstance(user_creds, (tuple, list)):
+            payload = {
+                "email": user_creds[0],
+                "password": user_creds[1]
+            }
+        else:
+            payload = user_creds
+
+
         response =  self.send_request(
             method="POST",
             endpoint=LOGIN_ENDPOINT,
-            data=user_creds,
+            data=payload,
             need_logging=False,
-            expected_status=201
+            expected_status=200
         )
 
 

@@ -2,11 +2,14 @@ from faker import Faker
 import pytest
 import requests
 
-import constants
-from constants import BASE_URL, REGISTER_ENDPOINT
+
+from constants import constants
 from custom_requester.custom_requester import CustomRequester
 from utils.data_generator import DataGenerator
 from tests.api.api_manager import ApiManager
+from resources.user_creds import SuperAdminCreds
+from entities.user import User
+from constants.roles import Roles
 
 faker = Faker()
 
@@ -56,7 +59,7 @@ def registered_user(requester, test_user):
     """
     response = requester.send_request(
         method="POST",
-        endpoint=REGISTER_ENDPOINT,
+        endpoint=constants.REGISTER_ENDPOINT,
         data=test_user,
         expected_status=201
     )
@@ -71,7 +74,7 @@ def requester():
     Фикстура для создания экземпляра CustomRequester.
     """
     session = requests.Session()
-    return CustomRequester(session=session, base_url=BASE_URL)
+    return CustomRequester(session=session, base_url=constants.BASE_URL)
 
 @pytest.fixture(scope="function")
 def session():
@@ -119,7 +122,7 @@ def movie_factory(authorized_api_manager):
 
     return _create
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def user_session():
     user_pool = []
 
@@ -132,3 +135,40 @@ def user_session():
 
     for user in user_pool:
         user.close_session()
+
+@pytest.fixture(scope="session")
+def super_admin(user_session):
+    new_session = user_session()
+
+    super_admin = User(
+        SuperAdminCreds.USERNAME,
+        SuperAdminCreds.PASSWORD,
+        "[SUPER_ADMIN]",
+        new_session)
+
+    super_admin.api.auth_api.authenticate(super_admin.creds)
+    return super_admin
+
+@pytest.fixture(scope="function")
+def creation_user_data(test_user):
+    updated_data = test_user.copy()
+    updated_data.update({
+        "verified": True,
+        "banned": False
+    })
+    return updated_data
+
+
+@pytest.fixture
+def common_user(user_session, super_admin, creation_user_data):
+    new_session = user_session()
+
+    common_user = User(
+        creation_user_data['email'],
+        creation_user_data['password'],
+        list(Roles.USER.value),
+        new_session)
+
+    super_admin.api.user_api.create_user(creation_user_data)
+    common_user.api.auth_api.authenticate(common_user.creds)
+    return common_user

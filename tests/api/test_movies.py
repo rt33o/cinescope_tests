@@ -28,6 +28,13 @@ class TestMovies:
         assert response_data["name"] == test_movie["name"], "Имя созданного фильма не совпадает со значением, указанным при создании"
         assert response_data['id'], "Не присвоен айди"
 
+
+    def test_create_movie_v2(self, common_user, test_movie):
+        response = common_user.api.movies_api.create_movie(test_movie=test_movie, expected_status=403)
+        response_data = response.json()
+
+
+
     def test_negative_create_movie(self, api_manager: ApiManager, test_movie):
         response = api_manager.movies_api.create_movie(expected_status=401, test_movie=test_movie)
         response_data = response.json()

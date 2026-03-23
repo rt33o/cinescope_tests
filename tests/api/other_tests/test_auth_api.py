@@ -1,6 +1,4 @@
-
-import pytest
-from constants import REGISTER_ENDPOINT, LOGIN_ENDPOINT
+from constants.constants import REGISTER_ENDPOINT, LOGIN_ENDPOINT
 
 
 class TestAuthAPI:
