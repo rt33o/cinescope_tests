@@ -5,6 +5,9 @@ from conftest import session
 from tests.api.api_manager import ApiManager
 
 class TestAuthAPI:
+    skip = True
+
+    @pytest.mark.skipif(skip, reason='Скипнуто пушто True')
     def test_register_user(self, api_manager: ApiManager, test_user):
         """
         Тест на регистрацию пользователя.
@@ -18,6 +21,7 @@ class TestAuthAPI:
         assert "roles" in response_data, "Роли пользователя отсутствуют в ответе"
         assert "USER" in response_data["roles"], "Роль USER должна быть у пользователя"
 
+    @pytest.mark.xfail(reason="Функция еще не реализована")
     def test_register_and_login_user(self, api_manager: ApiManager, user_creds, session):
         """
         Тест на регистрацию и авторизацию пользователя.

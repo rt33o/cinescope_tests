@@ -1,12 +1,17 @@
-from tests.api.api_manager import ApiManager
 import pytest
 
+@pytest.mark.smoke
+def test_addition():
+    assert 1 + 1 == 2
 
+@pytest.mark.regression
+def test_subtraction():
+    assert 5 - 3 == 2
 
-# ==============================Удаление фильмов==============================
-def test_delete_movie(super_admin, movie_factory):
-    movie = movie_factory()
-    movie_id = movie["id"]
-    response = super_admin.api.movies_api.delete_movie(movie_id=movie_id, expected_status=200)
-    response_data = response.json()
-    assert response_data['id'] == movie_id, 'Удален не тот фильм'
+@pytest.mark.api
+def test_multiplication():
+    assert 2 * 3 == 6
+
+@pytest.mark.slow
+def test_division():
+    assert 10 / 2 == 5

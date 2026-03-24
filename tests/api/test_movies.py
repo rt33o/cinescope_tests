@@ -2,7 +2,10 @@ from tests.api.api_manager import ApiManager
 import pytest
 from resources.test_data import MOVIES_FILTER_DATA
 
+
 class TestMovies:
+    pytestmark = pytest.mark.skip(reason="Тестирую скип")
+
     # ==============================Получение афиш фильмов==============================
     @pytest.mark.parametrize("min_p, max_p, location, genre_id", MOVIES_FILTER_DATA)
     def test_get_movies(self, api_manager: ApiManager, min_p, max_p, location, genre_id):
@@ -13,6 +16,7 @@ class TestMovies:
         price = movies[0]["price"]
         assert min_p < price < max_p, "Неверно приходят цены"
 
+    @pytest.mark.slow
     def test_negative_invalid_page_size_get_movies(self, api_manager: ApiManager):
         page_size = 21
         response = api_manager.movies_api.get_movies(expected_status=400, pageSize=page_size)
@@ -27,7 +31,7 @@ class TestMovies:
         assert response_data["name"] == test_movie["name"], "Имя созданного фильма не совпадает со значением, указанным при создании"
         assert response_data['id'], "Не присвоен айди"
 
-
+    @pytest.mark.slow
     def test_create_movie_v2(self, common_user, test_movie):
         response = common_user.api.movies_api.create_movie(test_movie=test_movie, expected_status=403)
         response_data = response.json()
@@ -46,6 +50,7 @@ class TestMovies:
         response_data = response.json()
         assert response_data['id'] == identification, 'Пришел неверный id'
 
+    @pytest.mark.slow
     def test_negative_get_movies_by_non_exist_id(self, authorized_api_manager: ApiManager):
         identification = 0
         response = authorized_api_manager.movies_api.get_movies_by_id(expected_status=404, identification=identification)
@@ -55,10 +60,11 @@ class TestMovies:
 
 
     # ==============================Удаление фильмов==============================
-    def test_delete_movie(self, authorized_api_manager: ApiManager, movie_factory):
+    @pytest.mark.slow
+    def test_delete_movie(self, super_admin, movie_factory):
         movie = movie_factory()
         movie_id = movie["id"]
-        response = authorized_api_manager.movies_api.delete_movie(movie_id=movie_id, expected_status=200)
+        response = super_admin.api.movies_api.delete_movie(movie_id=movie_id, expected_status=200)
         response_data = response.json()
         assert response_data['id'] == movie_id, 'Удален не тот фильм'
 

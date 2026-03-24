@@ -124,6 +124,10 @@ def movie_factory(authorized_api_manager):
 
 @pytest.fixture(scope="session")
 def user_session():
+    """
+    Создает юзер-сессию
+    :return:
+    """
     user_pool = []
 
     def _create_user_session():
@@ -138,6 +142,11 @@ def user_session():
 
 @pytest.fixture(scope="session")
 def super_admin(user_session):
+    """
+    Создает юзер-сессию с правами супер-админа
+    :param user_session:
+    :return:
+    """
     new_session = user_session()
 
     super_admin = User(
@@ -151,6 +160,11 @@ def super_admin(user_session):
 
 @pytest.fixture(scope="function")
 def creation_user_data(test_user):
+    """
+    Создает пользовательские данные
+    :param test_user:
+    :return:
+    """
     updated_data = test_user.copy()
     updated_data.update({
         "verified": True,
@@ -161,6 +175,13 @@ def creation_user_data(test_user):
 
 @pytest.fixture
 def common_user(user_session, super_admin, creation_user_data):
+    """
+    Создает сессию с правами обычного юзера
+    :param user_session:
+    :param super_admin:
+    :param creation_user_data:
+    :return:
+    """
     new_session = user_session()
 
     common_user = User(
