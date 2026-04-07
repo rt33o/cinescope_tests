@@ -1,20 +1,20 @@
 from tests.api.api_manager import ApiManager
 import pytest
 from resources.test_data import MOVIES_FILTER_DATA
+from models.movies_models import GettingMovies
 
 
 class TestMovies:
-    pytestmark = pytest.mark.skip(reason="Тестирую скип")
+
 
     # ==============================Получение афиш фильмов==============================
     @pytest.mark.parametrize("min_p, max_p, location, genre_id", MOVIES_FILTER_DATA)
     def test_get_movies(self, api_manager: ApiManager, min_p, max_p, location, genre_id):
-        response = api_manager.movies_api.get_movies(maxPrice=max_p, minPrice=min_p, locations=location,
+        response = api_manager.movies_api.get_movies(model=GettingMovies, maxPrice=max_p, minPrice=min_p, locations=location,
                                                      genreId=genre_id, pageSize=1)
-        response_data = response.json()
-        movies = response_data['movies']
-        price = movies[0]["price"]
-        assert min_p < price < max_p, "Неверно приходят цены"
+        first_movie = response.movies[0]
+        price = first_movie.price
+        assert min_p < price < max_p, f"Цена {price} вне диапазона {min_p}-{max_p}"
 
     @pytest.mark.slow
     def test_negative_invalid_page_size_get_movies(self, api_manager: ApiManager):

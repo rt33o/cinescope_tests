@@ -11,19 +11,26 @@ class MoviesAPI(CustomRequester):
         super().__init__(session=session, base_url=MOVIES_BASE_URL)
 
 
-    def get_movies(self, expected_status=200, **kwargs, ):
+    def get_movies(self, expected_status=200, model=None, **kwargs, ):
         """
         Получить список фильмов (GET /movies) с query-параметрами.
         :param expected_status: Ожидаемый статус-код.
+        :param model: Pydantic модель валидации данных.
         :param kwargs: Query-параметры запроса.
         """
-        return self.send_request(
+
+        response = self.send_request(
             method="GET",
             endpoint=MOVIES,
             expected_status=expected_status,
             query=kwargs,
             need_logging=False
         )
+
+        if model and expected_status == 200:
+            return model(**response.json())
+
+        return response
 
     def get_movies_by_id(self, expected_status=200, identification=1):
         """

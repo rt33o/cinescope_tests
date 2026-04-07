@@ -1,8 +1,7 @@
 import pytest
-import requests
-
 from conftest import session
 from tests.api.api_manager import ApiManager
+
 
 class TestAuthAPI:
     skip = True
