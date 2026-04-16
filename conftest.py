@@ -124,7 +124,11 @@ def movie_factory(authorized_api_manager):
             created_movie_ids.append(get_movie_id)
         return data
 
-    return _create
+    yield _create
+
+    for m_id in created_movie_ids:
+        authorized_api_manager.movies_api.delete_movie(movie_id=m_id)
+
 
 @pytest.fixture(scope="session")
 def user_session():

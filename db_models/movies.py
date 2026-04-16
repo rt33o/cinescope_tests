@@ -1,25 +1,29 @@
-from sqlalchemy import Column, String, Boolean, DateTime, Integer, Float
+# db_models/movies.py
+from sqlalchemy import Column, String, Integer, Float, Text, Boolean, DateTime
 from sqlalchemy.orm import declarative_base
 from typing import Dict, Any
 
 Base = declarative_base()
 
+
 class MovieDBModel(Base):
+    """Модель фильма"""
+
     __tablename__ = 'movies'
 
-    id = Column(Integer, primary_key=True)  # serial4 -> Integer
-    name = Column(String)                   # text -> String
-    price = Column(Integer)                 # int4 -> Integer
-    description = Column(String)            # text -> String
-    image_url = Column(String)              # text -> String
-    location = Column(String)               # custom Location enum -> String
-    published = Column(Boolean)             # bool -> Boolean
-    rating = Column(Float)                  # float8 -> Float
-    genre_id = Column(Integer)              # int4 -> Integer
-    created_at = Column(DateTime)           # timestamp(3) -> DateTime
+    id = Column(String, primary_key=True)
+    name = Column(String)
+    price = Column(Float)
+    description = Column(String)
+    image_url = Column(String)
+    location = Column(String)
+    published = Column(Boolean)
+    rating = Column(Float)
+    genre_id = Column(String)
+    created_at = Column(DateTime)
 
     def to_dict(self) -> Dict[str, Any]:
-        """Преобразование модели в словарь"""
+        """Преобразование в словарь"""
         return {
             'id': self.id,
             'name': self.name,
@@ -34,4 +38,4 @@ class MovieDBModel(Base):
         }
 
     def __repr__(self):
-        return f"<Movie(id={self.id}, name='{self.name}')>"
+        return f"<Movie(id='{self.id}', name='{self.name}', price={self.price})>"

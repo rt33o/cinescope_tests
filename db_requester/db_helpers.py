@@ -52,3 +52,22 @@ def get_movie_by_id(self, movie_id: str):
     """Получает фильм по ID"""
     return self.db_session.query(MovieDBModel).filter(MovieDBModel.id == movie_id).first()
 '''
+def create_test_movie(self, movie_data: dict) -> MovieDBModel:
+    """Создает тестовый фильм в базе данных"""
+    movie = MovieDBModel(**movie_data)
+    self.db_session.add(movie)
+    self.db_session.commit()
+    self.db_session.refresh(movie)
+    return movie
+
+def get_movie_by_id(self, movie_id: str) -> MovieDBModel:
+    """Получает фильм по ID"""
+    return self.db_session.query(MovieDBModel).filter(MovieDBModel.id == movie_id).first()
+
+def get_movie_by_name(self, name: str) -> MovieDBModel:
+    """Получает фильм по названию"""
+    return self.db_session.query(MovieDBModel).filter(MovieDBModel.name == name).first()
+
+def movie_exists_by_id(self, movie_id: str) -> bool:
+    """Проверяет существование фильма (возвращает True/False)"""
+    return self.db_session.query(MovieDBModel).filter(MovieDBModel.id == movie_id).count() > 0
