@@ -1,6 +1,7 @@
 
 import psycopg2
-from resources.db_creds import DataBaseCreds
+from psycopg2 import extras
+from resources.db_creds import MoviesDbCreds
 
 def connect_to_postgres():
     """Функция подключения к PostrgreSQL базе данных"""
@@ -9,11 +10,11 @@ def connect_to_postgres():
 
     try:
         connection = psycopg2.connect(
-            dbname=DataBaseCreds.NAME,
-            user=DataBaseCreds.USERNAME,
-            password=DataBaseCreds.PASSWORD,
-            host=DataBaseCreds.HOST,
-            port=DataBaseCreds.PORT
+            dbname=MoviesDbCreds.NAME,
+            user=MoviesDbCreds.USERNAME,
+            password=MoviesDbCreds.PASSWORD,
+            host=MoviesDbCreds.HOST,
+            port=MoviesDbCreds.PORT
         )
         print("Успешно подключено к DB")
 
@@ -26,6 +27,21 @@ def connect_to_postgres():
 
         #SQL script executing
         cursor.execute("SELECT version();")
+
+        # Создание стандартного курсора
+        cursor = connection.cursor()
+
+        cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+        # Выполнение SQL-запроса
+        cursor.execute(f'''
+                SELECT * from genres
+                ORDER by id desc limit 100'''
+                       )
+
+        # Получение результата
+        record = cursor.fetchall()
+        print(record)
 
         #Getting results
         record = cursor.fetchone()

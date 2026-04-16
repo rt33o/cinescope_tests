@@ -1,10 +1,11 @@
 import os
 from dotenv import load_dotenv
+
 load_dotenv()
 
-class DataBaseCreds:
-    USERNAME = os.getenv("DATABASE_USER")
-    PASSWORD = os.getenv("DATABASE_PASSWORD")
-    NAME = os.getenv("DATABASE_NAME")
-    HOST = os.getenv("DATABASE_HOST")
-    PORT = os.getenv('DATABASE_PORT')
+class MoviesDbCreds:
+    HOST = os.getenv('DB_MOVIES_HOST')
+    PORT = os.getenv('DB_MOVIES_PORT')
+    DATABASE_NAME = os.getenv('DB_MOVIES_NAME')
+    USERNAME = os.getenv('DB_MOVIES_USERNAME')
+    PASSWORD = os.getenv('DB_MOVIES_PASSWORD')

@@ -4,3 +4,4 @@ faker~=40.1.2
 pydantic~=2.12.5
 psycopg2~=2.9.11
 python-dotenv~=1.2.2
+SQLAlchemy~=2.0.49
