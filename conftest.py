@@ -1,19 +1,18 @@
 from faker import Faker
 import pytest
 import requests
-
-
 from constants import constants
+from constants.roles import Roles
 from custom_requester.custom_requester import CustomRequester
 from utils.data_generator import DataGenerator
 from tests.api.api_manager import ApiManager
 from resources.user_creds import SuperAdminCreds
 from entities.user import User
-from constants.roles import Roles
 from sqlalchemy.orm import Session
 from db_requester.db_client import get_db_session
 from db_requester.db_helpers import DBHelper
-# from models.user import RegistrationUserModel
+import json
+import allure
 
 faker = Faker()
 
@@ -227,6 +226,7 @@ def db_session() -> Session:
     """
     db_session = get_db_session()
     yield db_session
+    db_session.rollback()
     db_session.close()
 
 @pytest.fixture(scope="function")
@@ -248,3 +248,66 @@ def created_test_user(db_helper):
     # Cleanup после теста
     if db_helper.get_user_by_id(user.id):
         db_helper.delete_user(user)
+
+
+@pytest.fixture(scope="function")
+def created_test_movie(db_helper):
+    """
+    Фикстура: создает тестовый фильм напрямую в БД через DataGenerator
+     и удаляет его после завершения теста.
+    """
+    # 1. Генерируем данные для фильма
+    movie_data = DataGenerator.generate_random_movie()
+
+    # 2. Создаем фильм в базе через db_helper
+    movie = db_helper.create_test_movie(movie_data)
+
+    # 3. Отдаем объект фильма в тест
+    yield movie
+
+    # 4. Cleanup: Удаляем фильм после теста, если он еще существует
+    if db_helper.get_movie_by_id(movie.id):
+        db_helper.delete_movie_by_id(movie.id)
+
+
+# @pytest.hookimpl(tryfirst=True, hookwrapper=True)
+# def pytest_runtest_makereport(item, call):
+#     # Выполняем тест
+#     outcome = yield
+#     report = outcome.get_result()
+#
+#     # Если тест упал именно во время выполнения (фаза 'call')
+#     if report.failed:
+#         # Ищем наш менеджер среди фикстур теста
+#         # Он может называться api_manager или authorized_api_manager
+#         manager = None
+#         for fixture_name in ["api_manager", "authorized_api_manager"]:
+#             if fixture_name in item.funcargs:
+#                 manager = item.funcargs[fixture_name]
+#                 break
+#
+#         if manager and hasattr(manager, "last_response") and manager.last_response is not None:
+#             response = manager.last_response
+#
+#             # Прикрепляем ответ к Allure
+#             try:
+#                 # Если это JSON, крепим красиво со всеми отступами
+#                 allure.attach(
+#                     json.dumps(response.json(), indent=4, ensure_ascii=False),
+#                     name="API_RESPONSE_ON_FAILURE",
+#                     attachment_type=allure.attachment_type.JSON
+#                 )
+#             except Exception:
+#                 # Если там не JSON (например, 500 ошибка с HTML), крепим как текст
+#                 allure.attach(
+#                     response.text,
+#                     name="API_RESPONSE_BODY_TEXT",
+#                     attachment_type=allure.attachment_type.TEXT
+#                 )
+#
+#             # Дополнительно можно прикрепить и URL запроса
+#             allure.attach(
+#                 f"Method: {response.request.method}\nURL: {response.request.url}",
+#                 name="API_REQUEST_INFO",
+#                 attachment_type=allure.attachment_type.TEXT
+#             )

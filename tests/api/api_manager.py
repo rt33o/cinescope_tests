@@ -12,6 +12,19 @@ class ApiManager:
         :param session: HTTP-сессия, используемая всеми API-классами.
         """
         self.session = session
+        self.last_response = None  # Сюда будем сохранять последний ответ
+
+        # Обертка для метода request, чтобы он запоминал ответ
+        original_request = self.session.request
+
+        def wrapped_request(*args, **kwargs):
+            response = original_request(*args, **kwargs)
+            self.last_response = response  # Сохраняем ответ в "память" менеджера
+            return response
+
+        # Подменяем стандартный метод сессии на наш с памятью
+        self.session.request = wrapped_request
+
         self.auth_api = AuthAPI(session)
         self.user_api = UsersApi(session)
         self.movies_api = MoviesAPI(session)

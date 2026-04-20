@@ -1,3 +1,5 @@
+import pytest
+
 class TestUser:
 
     # def test_create_user(self, super_admin, creation_user_data):
@@ -26,10 +28,10 @@ class TestUser:
         common_user.api.user_api.get_user(common_user.email, expected_status=403)
 
 
-import pytest
 
 
-import pytest
+
+
 
 
 @pytest.mark.parametrize("parameter_name", ["value1", "value2"])
