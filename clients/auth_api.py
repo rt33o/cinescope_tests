@@ -19,7 +19,8 @@ class AuthAPI(CustomRequester):
             method="POST",
             endpoint=REGISTER_ENDPOINT,
             data=user_data,
-            expected_status=expected_status
+            expected_status=expected_status,
+            need_logging=False
         )
 
     def login_user(self, login_data, expected_status=201):
@@ -33,7 +34,8 @@ class AuthAPI(CustomRequester):
             method="POST",
             endpoint=LOGIN_ENDPOINT,
             data=login_data,
-            expected_status=expected_status
+            expected_status=expected_status,
+            need_logging=False
         )
 
     def authenticate(self, user_creds: dict):

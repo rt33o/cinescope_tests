@@ -1,0 +1,58 @@
+2026-04-21 23:07:01 [32mINFO[0m 
+======================================== REQUEST ========================================
+2026-04-21 23:07:01 [32mINFO[0m [32mpytest tests/api/other_tests/test_auth_api.py::TestAuthAPI::test_register_and_login_user (setup)[0m
+curl -X POST 'https://auth.dev-cinescope.coconutqa.ru//register' \
+-H 'User-Agent: python-requests/2.32.5' \
+-H 'Accept-Encoding: gzip, deflate' \
+-H 'Accept: */*' \
+-H 'Connection: keep-alive' \
+-H 'Content-Length: 158' \
+-H 'Content-Type: application/json' \
+-d '{"email": "kek4wdh8x8f@gmail.com", "fullName": "Denise Sullivan", "password": "5KQO5Sbu4BS6CSirT2", "passwordRepeat": "5KQO5Sbu4BS6CSirT2", "roles": ["USER"]}' 
+
+2026-04-21 23:07:01 [32mINFO[0m 
+======================================== RESPONSE ========================================
+2026-04-21 23:07:01 [32mINFO[0m 	STATUS_CODE: [32m201[0m
+	DATA:
+{
+    "id": "2e7a2383-c202-43da-95b4-223608cbb151",
+    "email": "kek4wdh8x8f@gmail.com",
+    "fullName": "Denise Sullivan",
+    "verified": true,
+    "banned": false,
+    "roles": [
+        "USER"
+    ],
+    "createdAt": "2026-04-21T20:07:03.232Z"
+}
+2026-04-21 23:07:01 [32mINFO[0m ================================================================================
+2026-04-21 23:07:01 [32mINFO[0m 
+======================================== REQUEST ========================================
+2026-04-21 23:07:01 [32mINFO[0m [32mpytest tests/api/other_tests/test_auth_api.py::TestAuthAPI::test_register_and_login_user[0m
+curl -X POST 'https://auth.dev-cinescope.coconutqa.ru//login' \
+-H 'User-Agent: python-requests/2.32.5' \
+-H 'Accept-Encoding: gzip, deflate' \
+-H 'Accept: */*' \
+-H 'Connection: keep-alive' \
+-H 'Content-Length: 68' \
+-H 'Content-Type: application/json' \
+-d '{"email": "kek4wdh8x8f@gmail.com", "password": "5KQO5Sbu4BS6CSirT2"}' 
+
+2026-04-21 23:07:01 [32mINFO[0m 
+======================================== RESPONSE ========================================
+2026-04-21 23:07:01 [32mINFO[0m 	STATUS_CODE: [32m200[0m
+	DATA:
+{
+    "user": {
+        "id": "2e7a2383-c202-43da-95b4-223608cbb151",
+        "email": "kek4wdh8x8f@gmail.com",
+        "fullName": "Denise Sullivan",
+        "roles": [
+            "USER"
+        ]
+    },
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjJlN2EyMzgzLWMyMDItNDNkYS05NWI0LTIyMzYwOGNiYjE1MSIsImVtYWlsIjoia2VrNHdkaDh4OGZAZ21haWwuY29tIiwicm9sZXMiOlsiVVNFUiJdLCJ2ZXJpZmllZCI6dHJ1ZSwiaWF0IjoxNzc2ODAyMDIzLCJleHAiOjE3NzY4MDM4MjN9.yvAgGVePKGgrDrZNLnM2X4wp6FG4R18gbk_xb44sPdU",
+    "refreshToken": "b630a57e-1e44-4c72-8281-ca311c259081",
+    "expiresIn": 1776803823584
+}
+2026-04-21 23:07:01 [32mINFO[0m ================================================================================

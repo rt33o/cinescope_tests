@@ -1,0 +1,28 @@
+2026-04-21 23:07:01 [32mINFO[0m 
+======================================== REQUEST ========================================
+2026-04-21 23:07:01 [32mINFO[0m [32mpytest tests/api/other_tests/test_auth_api.py::TestAuthAPI::test_register_user[0m
+curl -X POST 'https://auth.dev-cinescope.coconutqa.ru//register' \
+-H 'User-Agent: python-requests/2.32.5' \
+-H 'Accept-Encoding: gzip, deflate' \
+-H 'Accept: */*' \
+-H 'Connection: keep-alive' \
+-H 'Content-Length: 152' \
+-H 'Content-Type: application/json' \
+-d '{"email": "kekukcqa9dj@gmail.com", "fullName": "David Lee", "password": "5dh0YvSvv98Uws%9rQ", "passwordRepeat": "5dh0YvSvv98Uws%9rQ", "roles": ["USER"]}' 
+
+2026-04-21 23:07:01 [32mINFO[0m 
+======================================== RESPONSE ========================================
+2026-04-21 23:07:01 [32mINFO[0m 	STATUS_CODE: [32m201[0m
+	DATA:
+{
+    "id": "9f6d3ee9-e5e7-4770-ae75-a1d29521e85d",
+    "email": "kekukcqa9dj@gmail.com",
+    "fullName": "David Lee",
+    "verified": true,
+    "banned": false,
+    "roles": [
+        "USER"
+    ],
+    "createdAt": "2026-04-21T20:07:02.832Z"
+}
+2026-04-21 23:07:01 [32mINFO[0m ================================================================================

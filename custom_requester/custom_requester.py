@@ -20,7 +20,7 @@ class CustomRequester:
         self.logger.setLevel(logging.INFO)
 
 
-    def send_request(self, method, endpoint, data=None, query=None, expected_status=200,  need_logging=True):
+    def send_request(self, method, endpoint, data=None, query=None, expected_status=200,  need_logging=False):
         """
         Универсальный метод для отправки запросов.
         :param method: HTTP метод (GET, POST, PUT, DELETE и т.д.).

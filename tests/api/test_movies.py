@@ -74,6 +74,7 @@ class TestMovies:
         2. Проверяем, что в ответе API имя фильма соответствует отправленному.
         """)
     @allure.severity(allure.severity_level.BLOCKER)
+    @pytest.mark.smoke
     def test_create_movie(self, authorized_api_manager: ApiManager, test_movie):
         expected_name = test_movie["name"]
 
@@ -110,6 +111,7 @@ class TestMovies:
             2. Появление фильма в БД после создания через API.
             3. Исчезновение фильма из БД после удаления через API.
             """)
+    @pytest.mark.integration
     def test_movie_full_db_lifecycle(self, authorized_api_manager, db_helper, test_movie):
         """
         Проверка жизненного цикла фильма в БД через API
@@ -162,7 +164,8 @@ class TestMovies:
             # Мы передаем expected_status=403, так как это ожидаемое поведение
             response = common_user.api.movies_api.create_movie(
                 test_movie=test_movie,
-                expected_status=403
+                expected_status=403,
+                need_logging=False
             )
 
             allure.attach(
@@ -205,54 +208,166 @@ class TestMovies:
             )
 
     # ==============================Получение афиш фильмов по идентификатору==============================
+    @allure.title("Получение информации о фильме по ID")
+    @allure.description("""
+        Тест проверяет корректность получения данных конкретного фильма:
+        1. Отправляем GET-запрос на получение фильма по ID {identification}.
+        2. Проверяем, что ID в теле ответа совпадает с запрашиваемым.
+        """)
+    @allure.severity(allure.severity_level.NORMAL)
     def test_get_movies_by_id(self, authorized_api_manager: ApiManager):
         identification = 899
-        response = authorized_api_manager.movies_api.get_movies_by_id(identification=identification, model=GettingMovieById)
-        assert response.id == identification, 'Пришел неверный id'
+
+        with allure.step(f"Запрос информации о фильме с ID: {identification}"):
+            response = authorized_api_manager.movies_api.get_movies_by_id(
+                identification=identification,
+                model=GettingMovieById
+            )
+
+        with allure.step("Проверка соответствия ID в ответе"):
+            assert response.id == identification, (
+                f"Ошибка: ожидался ID {identification}, но пришел {response.id}"
+            )
 
     @pytest.mark.slow
+    @allure.title("Негативный тест: получение фильма по несуществующему ID (404 Not Found)")
+    @allure.description("""
+        Проверка обработки запроса к отсутствующему ресурсу:
+        1. Отправляем GET-запрос с ID = {identification} (заведомо несуществующий).
+        2. Ожидаем статус-код 404.
+        3. Проверяем наличие корректного сообщения об ошибке: 'Фильм не найден'.
+        """)
+    @allure.severity(allure.severity_level.NORMAL)
     def test_negative_get_movies_by_non_exist_id(self, authorized_api_manager: ApiManager):
         identification = 0
-        response = authorized_api_manager.movies_api.get_movies_by_id(expected_status=404, identification=identification)
-        response_data = response.json()
-        assert response_data['message'] == "Фильм не найден", 'Найден фильм по несуществующему ID'
-    #
+
+        with allure.step(f"Запрос фильма с ID: {identification}"):
+            response = authorized_api_manager.movies_api.get_movies_by_id(
+                expected_status=404,
+                identification=identification
+            )
+            response_data = response.json()
+
+        with allure.step("Проверка сообщения об ошибке в ответе"):
+            assert response_data['message'] == "Фильм не найден", (
+                f"Ошибка: ожидалось сообщение 'Фильм не найден', но пришло: {response_data.get('message')}"
+            )
+
 
 
     # ==============================Удаление фильмов==============================
+    @allure.title("Удаление фильма (права Супер-админа)")
+    @allure.description("""
+        Проверка удаления фильма с полными правами доступа:
+        1. Генерируем новый фильм через factory.
+        2. Отправляем запрос на удаление созданного фильма по его ID.
+        3. Проверяем, что API подтверждает удаление именно этого ID.
+        """)
+    @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.slow
     def test_delete_movie(self, super_admin, movie_factory):
-        movie = movie_factory()
-        movie_id = movie["id"]
-        response = super_admin.api.movies_api.delete_movie(movie_id=movie_id, expected_status=200, model=DeleteMovie)
-        response_data = response.json()
-        assert response.id == movie_id, 'Удален не тот фильм'
+        with allure.step("Предусловие: Создание тестового фильма"):
+            movie = movie_factory()
+            movie_id = movie["id"]
+            movie_name = movie.get("name", "Unknown")
 
+            with allure.step(f"Действие: Удаление фильма '{movie_name}' (ID: {movie_id})"):
+                response = super_admin.api.movies_api.delete_movie(
+                    movie_id=movie_id,
+                    expected_status=200,
+                    model=DeleteMovie
+                )
 
-    def test_negative_delete_movie(self, api_manager: ApiManager, movie_factory):
-        response = api_manager.movies_api.delete_movie(movie_id=None, expected_status=404)
+            with allure.step("Проверка: в ответе вернулся ID удаленного фильма"):
+                assert response.id == movie_id, (
+                    f"Ошибка: ожидалось удаление ID {movie_id}, но в ответе пришел {response.id}"
+                )
 
-        response_data = response.json()
-        assert response_data["message"] == "Фильм не найден", 'Попытка удаления фильма '
+    @allure.title("Негативный тест: удаление фильма без указания ID (404 Not Found)")
+    @allure.description("""
+        Проверка обработки некорректного ID при удалении:
+        1. Отправляем запрос на удаление с movie_id = None.
+        2. Ожидаем, что сервер не найдет ресурс и вернет 404.
+        3. Проверяем наличие сообщения 'Фильм не найден'.
+        """)
+    @allure.severity(allure.severity_level.MINOR)
+    @pytest.mark.negative
+    def test_negative_delete_movie(self, super_admin):
+        with allure.step("Попытка удаления фильма с ID: None"):
+            response = super_admin.api.movies_api.delete_movie(
+                movie_id=None,
+                expected_status=404
+            )
+            response_data = response.json()
 
+        with allure.step("Проверка сообщения об ошибке"):
+            assert response_data["message"] == "Фильм не найден", (
+                f"Ожидалось 'Фильм не найден', но пришло: {response_data.get('message')}"
+            )
 
 
     # ==============================Обновление фильмов==============================
+    @allure.title("Частичное обновление данных фильма (PATCH)")
+    @allure.description("""
+        Тест проверяет корректность обновления информации о фильме:
+        1. Создаем тестовый фильм через factory.
+        2. Отправляем PATCH-запрос с новыми данными (цена и название).
+        3. Проверяем, что в ответе от API значения полей изменились по сравнению с исходными.
+        """)
+    @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.slow
     def test_update_movie(self, authorized_api_manager: ApiManager, movie_factory, updated_test_movie_data):
-        movie = movie_factory()
-        movie_id = movie["id"]
-        response = authorized_api_manager.movies_api.patch_movie(movie_id=movie_id, data=updated_test_movie_data, expected_status=200, model=UpdateMovie)
-        # response_data = response.json()
-        # assert response_data["price"] != movie["price"], "Информация не была обновлена"
-        # assert response_data["name"] != movie["name"], "Description не должен был перезаписаться"
-        # assert response_data["imageUrl"] == movie['imageUrl'], 'ImageURL не должен был перезаписаться'
+        with allure.step("Предусловие: Создание фильма для последующего обновления"):
+            movie = movie_factory()
+            movie_id = movie["id"]
+            old_name = movie["name"]
+            old_price = movie["price"]
+
+        with allure.step(f"Действие: Обновление фильма ID {movie_id} новыми данными"):
+            response = authorized_api_manager.movies_api.patch_movie(
+                movie_id=movie_id,
+                data=updated_test_movie_data,
+                expected_status=200,
+                model=UpdateMovie
+            )
+
+            allure.attach(str(updated_test_movie_data), name="Update Payload",
+                          attachment_type=allure.attachment_type.JSON)
+
+        with allure.step("Проверка: Данные успешно изменены"):
+            # Проверяем изменение цены
+            assert response.price != old_price, (
+                f"Ошибка: цена не изменилась и осталась {old_price}"
+            )
+            # Проверяем изменение имени
+            assert response.name != old_name, (
+                f"Ошибка: имя не было обновлено (текущее: {response.name}, старое: {old_name})"
+            )
+
 
     # ==============================Обновление фильмов==============================
-    def test_negative_invalid_id_update_movie(self, authorized_api_manager: ApiManager, movie_factory, updated_test_movie_data):
-        movie = movie_factory()
+    @allure.title("Негативный тест: обновление фильма с ID=None (404 Not Found)")
+    @allure.description("""
+        Проверка валидации идентификатора при частичном обновлении:
+        1. Попытка отправить PATCH-запрос с movie_id = None.
+        2. Ожидаем, что сервер вернет 404 Not Found.
+        3. Проверяем корректность сообщения об ошибке 'Фильм не найден'.
+        """)
+    @allure.severity(allure.severity_level.MINOR)
+    @pytest.mark.negative
+    def test_negative_invalid_id_update_movie(self, authorized_api_manager: ApiManager, updated_test_movie_data):
         movie_id = None
-        response = authorized_api_manager.movies_api.patch_movie(movie_id=movie_id, data=updated_test_movie_data, expected_status=404)
-        response_data = response.json()
-        assert response_data["message"] == "Фильм не найден", "Попытка обновления информации с невалидным ID"
+
+        with allure.step(f"Попытка обновления фильма с ID: {movie_id}"):
+            response = authorized_api_manager.movies_api.patch_movie(
+                movie_id=movie_id,
+                data=updated_test_movie_data,
+                expected_status=404
+            )
+            response_data = response.json()
+
+        with allure.step("Проверка сообщения об ошибке"):
+            assert response_data["message"] == "Фильм не найден", (
+                f"Ожидалось сообщение 'Фильм не найден', но пришло: {response_data.get('message')}"
+            )
 

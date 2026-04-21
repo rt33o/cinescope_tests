@@ -33,13 +33,13 @@ class TestUser:
 
 
 
-
-@pytest.mark.parametrize("parameter_name", ["value1", "value2"])
-class TestParametrizedClass:
-    def test_first(self, parameter_name):
-        print(f"Тест 1 прогон: {parameter_name}")
-        assert True
-
-    def test_second(self, parameter_name):
-        print(f"Тест 2 прогон: {parameter_name}")
-        assert True
+#
+# @pytest.mark.parametrize("parameter_name", ["value1", "value2"])
+# class TestParametrizedClass:
+#     def test_first(self, parameter_name):
+#         print(f"Тест 1 прогон: {parameter_name}")
+#         assert True
+#
+#     def test_second(self, parameter_name):
+#         print(f"Тест 2 прогон: {parameter_name}")
+#         assert True

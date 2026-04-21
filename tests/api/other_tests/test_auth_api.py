@@ -10,7 +10,8 @@ class TestAuthAPI:
             method="POST",
             endpoint=REGISTER_ENDPOINT,
             data=test_user,
-            expected_status=201
+            expected_status=201,
+            need_logging=False
         )
         response_data = response.json()
         assert response_data["email"] == test_user["email"], "Email не совпадает"

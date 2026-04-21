@@ -126,7 +126,11 @@ def movie_factory(authorized_api_manager):
     yield _create
 
     for m_id in created_movie_ids:
-        authorized_api_manager.movies_api.delete_movie(movie_id=m_id)
+        try:
+            authorized_api_manager.movies_api.delete_movie(movie_id=m_id)
+        except ValueError:
+            # Если фильм уже удален (404), просто идем дальше
+            pass
 
 
 @pytest.fixture(scope="session")

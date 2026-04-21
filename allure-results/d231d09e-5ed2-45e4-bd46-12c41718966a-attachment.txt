@@ -1,0 +1,21 @@
+2026-04-21 23:07:22 [32mINFO[0m 
+======================================== REQUEST ========================================
+2026-04-21 23:07:22 [32mINFO[0m [32mpytest tests/api/test_user.py::TestUser::test_get_user_by_id_common_user[0m
+curl -X GET 'https://auth.dev-cinescope.coconutqa.ru/user/kekvmvx6tpj@gmail.com' \
+-H 'User-Agent: python-requests/2.32.5' \
+-H 'Accept-Encoding: gzip, deflate' \
+-H 'Accept: application/json' \
+-H 'Connection: keep-alive' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjUyNWFkNDhhLTFhNTEtNDVkNi05ZTJlLWUxZmIzYWFlM2M0ZCIsImVtYWlsIjoia2Vrdm12eDZ0cGpAZ21haWwuY29tIiwicm9sZXMiOlsiVVNFUiJdLCJ2ZXJpZmllZCI6dHJ1ZSwiaWF0IjoxNzc2ODAyMDQzLCJleHAiOjE3NzY4MDM4NDN9.mqMlknF7IcxyTS8KkP7tY8YjrwV8WNtH04gQ-nHjpWY' \
+-H 'Cookie: refresh_token=78df7777-f7c4-435a-9a7d-1a3a5b191a21' \
+
+2026-04-21 23:07:22 [32mINFO[0m 
+======================================== RESPONSE ========================================
+2026-04-21 23:07:22 [32mINFO[0m 	STATUS_CODE: [31m403[0m
+	DATA: [31m{
+    "message": "Forbidden resource",
+    "error": "Forbidden",
+    "statusCode": 403
+}[0m
+2026-04-21 23:07:22 [32mINFO[0m ================================================================================

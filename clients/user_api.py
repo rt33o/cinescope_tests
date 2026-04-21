@@ -45,5 +45,6 @@ class UsersApi(CustomRequester):
             method="POST",
             endpoint="user",
             data=user_data,
-            expected_status=expected_status
+            expected_status=expected_status,
+            need_logging=False
         )
