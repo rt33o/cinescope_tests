@@ -1,2 +1,0 @@
-User: Common User
-Movie Data: {'name': 'Mallory Locks', 'imageUrl': 'http://www.freeman.org/', 'price': 2565, 'description': 'See realize friend. Center allow never relationship.', 'location': 'SPB', 'published': False, 'genreId': 1}

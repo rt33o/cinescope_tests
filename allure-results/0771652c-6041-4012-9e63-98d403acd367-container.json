@@ -1,1 +1,0 @@
-{"uuid": "6fb8e6ca-fc4e-490c-b71d-dbb061d441bd", "children": ["4dc1af7a-bc29-444d-8d0a-b8b5bc1f72d8"], "befores": [{"name": "movie_factory", "status": "passed", "start": 1776802036748, "stop": 1776802036748}], "afters": [{"name": "movie_factory::0", "status": "passed", "start": 1776802037880, "stop": 1776802038006}], "start": 1776802036748, "stop": 1776802038006}
