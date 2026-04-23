@@ -11,6 +11,7 @@ class TestMovies:
     @allure.title("Проверка фильтрации афиши по цене: от {min_p} до {max_p}")
     @allure.description("Проверяем, что при применении фильтров API возвращает фильмы, цена которых попадает в диапазон.")
     @pytest.mark.parametrize("min_p, max_p, location, genre_id", MOVIES_FILTER_DATA)
+    @pytest.mark.smoke
     def test_get_movies(self, api_manager: ApiManager, min_p, max_p, location, genre_id):
         with allure.step(f"Запрос списка фильмов (Цена: {min_p}-{max_p}, Локация: {location}, Жанр: {genre_id})"):
             response = api_manager.movies_api.get_movies(
@@ -36,7 +37,7 @@ class TestMovies:
 
             assert min_p < price < max_p, f"Цена {price} вне диапазона {min_p}-{max_p}"
 
-    @pytest.mark.slow
+    @pytest.mark.negative
     @allure.title("Негативный тест: получение афиши с некорректным pageSize")
     @allure.description("""
         Тест проверяет валидацию параметра pageSize:
@@ -157,7 +158,7 @@ class TestMovies:
         3. Ожидаем, что API заблокирует действие и вернет статус 403 Forbidden.
         """)
     @allure.severity(allure.severity_level.CRITICAL)
-    @pytest.mark.slow
+    @pytest.mark.negative
     def test_negative_unathorized_user_create_movie(self, common_user, test_movie):
         movie_name = test_movie.get("name", "Unknown")
         with allure.step(f"Попытка создания фильма '{movie_name}' обычным пользователем"):
@@ -187,6 +188,7 @@ class TestMovies:
         3. Проверяем, что в ответе содержится сообщение 'Unauthorized'.
         """)
     @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.negative
     def test_negative_create_movie(self, api_manager: ApiManager, test_movie):
         with allure.step("Запрос на создание фильма неавторизованным пользователем"):
             response = api_manager.movies_api.create_movie(
@@ -215,6 +217,7 @@ class TestMovies:
         2. Проверяем, что ID в теле ответа совпадает с запрашиваемым.
         """)
     @allure.severity(allure.severity_level.NORMAL)
+    @pytest.mark.smoke
     def test_get_movies_by_id(self, authorized_api_manager: ApiManager):
         identification = 899
 
@@ -229,7 +232,7 @@ class TestMovies:
                 f"Ошибка: ожидался ID {identification}, но пришел {response.id}"
             )
 
-    @pytest.mark.slow
+    @pytest.mark.negative
     @allure.title("Негативный тест: получение фильма по несуществующему ID (404 Not Found)")
     @allure.description("""
         Проверка обработки запроса к отсутствующему ресурсу:
@@ -265,6 +268,7 @@ class TestMovies:
         """)
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.slow
+    @pytest.mark.regression
     def test_delete_movie(self, super_admin, movie_factory):
         with allure.step("Предусловие: Создание тестового фильма"):
             movie = movie_factory()
@@ -316,6 +320,7 @@ class TestMovies:
         """)
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.slow
+    @pytest.mark.regression
     def test_update_movie(self, authorized_api_manager: ApiManager, movie_factory, updated_test_movie_data):
         with allure.step("Предусловие: Создание фильма для последующего обновления"):
             movie = movie_factory()
@@ -345,7 +350,7 @@ class TestMovies:
             )
 
 
-    # ==============================Обновление фильмов==============================
+
     @allure.title("Негативный тест: обновление фильма с ID=None (404 Not Found)")
     @allure.description("""
         Проверка валидации идентификатора при частичном обновлении:
