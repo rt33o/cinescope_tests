@@ -20,10 +20,10 @@ class TestloginPage:
 
             login_page.assert_was_redirect_to_home_page()  # Проверка редиректа на домашнюю страницу
             login_page.make_screenshot_and_attach_to_allure()  # Прикрепляем скриншот
-            login_page.assert_allert_was_pop_up()  # Проверка появления и исчезновения алерта
+            login_page.assert_alert_was_pop_up()  # Проверка появления и исчезновения алерта
 
             # Пауза для визуальной проверки (нужно удалить в реальном тестировании)
-            page.wait_for_timeout(5000)
+            # page.wait_for_timeout(500)
             browser.close()
 
 

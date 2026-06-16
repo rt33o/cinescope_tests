@@ -29,7 +29,7 @@ class TestRegisterPage:
 
             register_page.assert_was_redirect_to_login_page()  # Проверка редиректа на страницу /login
             register_page.make_screenshot_and_attach_to_allure()  # Прикрепляем скриншот
-            register_page.assert_allert_was_pop_up()  # Проверка появления и исчезновения алерта
+            register_page.assert_alert_was_pop_up()  # Проверка появления и исчезновения алерта
 
             # Пауза для визуальной проверки (нужно удалить в реальном тестировании)
             page.wait_for_timeout(5000)
