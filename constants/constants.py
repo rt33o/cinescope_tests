@@ -12,3 +12,5 @@ MOVIES = "/movies"
 
 user_creds = {"email": "api1@gmail.com",
         "password": "asdqwe123Q"}
+
+DEFAULT_UI_TIMEOUT = 30000

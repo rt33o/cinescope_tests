@@ -2,6 +2,7 @@ from faker import Faker
 import pytest
 import requests
 from constants import constants
+from constants.constants import DEFAULT_UI_TIMEOUT
 from constants.roles import Roles
 from custom_requester.custom_requester import CustomRequester
 from utils.data_generator import DataGenerator
@@ -11,9 +12,8 @@ from entities.user import User
 from sqlalchemy.orm import Session
 from db_requester.db_client import get_db_session
 from db_requester.db_helpers import DBHelper
-import json
-import allure
-
+from playwright.sync_api import sync_playwright
+from common.tools import Tools
 faker = Faker()
 
 
@@ -274,44 +274,25 @@ def created_test_movie(db_helper):
         db_helper.delete_movie_by_id(movie.id)
 
 
-# @pytest.hookimpl(tryfirst=True, hookwrapper=True)
-# def pytest_runtest_makereport(item, call):
-#     # Выполняем тест
-#     outcome = yield
-#     report = outcome.get_result()
-#
-#     # Если тест упал именно во время выполнения (фаза 'call')
-#     if report.failed:
-#         # Ищем наш менеджер среди фикстур теста
-#         # Он может называться api_manager или authorized_api_manager
-#         manager = None
-#         for fixture_name in ["api_manager", "authorized_api_manager"]:
-#             if fixture_name in item.funcargs:
-#                 manager = item.funcargs[fixture_name]
-#                 break
-#
-#         if manager and hasattr(manager, "last_response") and manager.last_response is not None:
-#             response = manager.last_response
-#
-#             # Прикрепляем ответ к Allure
-#             try:
-#                 # Если это JSON, крепим красиво со всеми отступами
-#                 allure.attach(
-#                     json.dumps(response.json(), indent=4, ensure_ascii=False),
-#                     name="API_RESPONSE_ON_FAILURE",
-#                     attachment_type=allure.attachment_type.JSON
-#                 )
-#             except Exception:
-#                 # Если там не JSON (например, 500 ошибка с HTML), крепим как текст
-#                 allure.attach(
-#                     response.text,
-#                     name="API_RESPONSE_BODY_TEXT",
-#                     attachment_type=allure.attachment_type.TEXT
-#                 )
-#
-#             # Дополнительно можно прикрепить и URL запроса
-#             allure.attach(
-#                 f"Method: {response.request.method}\nURL: {response.request.url}",
-#                 name="API_REQUEST_INFO",
-#                 attachment_type=allure.attachment_type.TEXT
-#             )
+@pytest.fixture(scope="session")
+def browser(playwright):
+    browser = playwright.chromium.launch(headless=False)
+    yield browser
+    browser.close()
+
+@pytest.fixture(scope="function")
+def context(browser):
+    context = browser.new_context()
+    context.tracing.start(screenshots=True, snapshots=True, sources=True)
+    context.set_default_timeout(DEFAULT_UI_TIMEOUT)
+    yield context
+    log_name = f"trace_{Tools.get_timestamp()}.zip"
+    trace_path = Tools.files_dir('playwright_trace', log_name)
+    context.tracing.stop(path=trace_path)
+    context.close()
+
+@pytest.fixture(scope="function")
+def page(context):
+    page = context.new_page()
+    yield page
+    page.close()
